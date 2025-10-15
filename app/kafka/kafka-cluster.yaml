@@ -1,0 +1,54 @@
+apiVersion: kafka.strimzi.io/v1beta2
+kind: Kafka
+metadata:
+  name: kafka-cluster
+  namespace: kafka-prod
+spec:
+  kafka:
+    version: 4.1.0
+    config:
+      auto.create.topics.enable: "false"
+      offsets.topic.replication.factor: 3
+      transaction.state.log.replication.factor: 3
+      transaction.state.log.min.isr: 2
+      default.replication.factor: 3
+      min.insync.replicas: 2
+    authorization:
+      type: simple
+    listeners:
+      - name: plain
+        port: 9093
+        type: internal
+        tls: false
+        authentication:
+          type: scram-sha-512
+      - name: external
+        port: 9094
+        type: loadbalancer
+        tls: true
+        authentication:
+          type: scram-sha-512
+        configuration:
+          brokerCertChainAndKey:
+            secretName: kafka-cluster-cert
+            certificate: tls.crt
+            key: tls.key
+          bootstrap:
+            loadBalancerIP: 10.100.100.5
+          brokers:
+            - broker: 0
+              loadBalancerIP: 10.100.100.6
+              advertisedHost: 10.100.100.6
+              advertisedPort: 9094
+            - broker: 1
+              loadBalancerIP: 10.100.100.7
+              advertisedHost: 10.100.100.7
+              advertisedPort: 9094
+            - broker: 2
+              loadBalancerIP: 10.100.100.8
+              advertisedHost: 10.100.100.8
+              advertisedPort: 9094
+
+  entityOperator:
+    topicOperator: {}
+    userOperator: {}

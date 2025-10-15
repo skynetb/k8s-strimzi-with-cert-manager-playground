@@ -1,0 +1,38 @@
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: root-ca
+  namespace: cert-manager
+spec:
+  secretName: root-ca
+
+  subject:
+    organizations:
+      - my-kafka
+    countries:
+      - KR
+
+  commonName: my-kafka
+
+  duration: "87600h"
+  renewBefore: "720h"
+
+  isCA: true
+
+  privateKey:
+    algorithm: RSA
+    size: 2048
+    encoding: PKCS1
+
+  # https://cert-manager.io/docs/reference/api-docs/#cert-manager.io/v1.KeyUsage
+  usages:
+    - crl sign
+    - digital signature
+    - key encipherment
+    - server auth
+    - client auth
+
+  issuerRef:
+    name: selfsigned-issuer
+    kind: ClusterIssuer
+    group: cert-manager.io

@@ -1,0 +1,14 @@
+apiVersion: kafka.strimzi.io/v1beta2
+kind: KafkaTopic
+metadata:
+  name: orders-topic
+  namespace: kafka-prod
+  labels:
+    strimzi.io/cluster: kafka-cluster # kafka cluster's name
+spec:
+  partitions: 6
+  replicas: 3
+  config:
+    retention.ms: 604800000 # 7days
+    segment.bytes: 1073741824 # 1GB
+    # cleanup.policy: delete # delete or compact

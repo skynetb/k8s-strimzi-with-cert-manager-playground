@@ -1,0 +1,34 @@
+apiVersion: kafka.strimzi.io/v1beta2
+kind: KafkaUser
+metadata:
+  name: kafka-user # username for client applications
+  namespace: kafka-prod
+  labels:
+    strimzi.io/cluster: kafka-cluster # kafka cluster's name
+spec:
+  authentication:
+    type: scram-sha-512
+    password:
+      valueFrom:
+        secretKeyRef:
+          name: kafka-user
+          key: password
+  authorization:
+    type: simple
+    acls:
+      - resource:
+          type: topic
+          name: orders-topic
+          patternType: literal
+        operations:
+          - Write
+          - Create
+          - Describe
+      - resource:
+          type: group
+          name: app-producer-group
+          patternType: literal
+        operations:
+          - Read
+          - Describe
+

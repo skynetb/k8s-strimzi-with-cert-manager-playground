@@ -1,0 +1,48 @@
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: kafka-cluster-cert
+  namespace: kafka-prod
+spec:
+  secretName: kafka-cluster-cert
+
+  duration: "87600h"
+  renewBefore: "720h"
+
+  subject:
+    organizations:
+      - my-kafka
+    countries:
+      - KR
+
+  commonName: kafka-cluster
+
+  dnsNames:
+    - kafka-cluster-kafka-bootstrap.kafka-prod.svc
+    - kafka-cluster-kafka-bootstrap.kafka-prod
+    - kafka-cluster-kafka-bootstrap
+    - kafka-cluster-kafka-brokers.kafka-prod.svc
+    - kafka-cluster-kafka-brokers.kafka-prod
+    - kafka-cluster-kafka-brokers
+    - "*.kafka-prod.svc"
+
+  ipAddresses:
+    - 10.100.100.5
+    - 10.100.100.6
+    - 10.100.100.7
+    - 10.100.100.8
+
+  privateKey:
+    algorithm: RSA
+    size: 2048
+    encoding: PKCS1
+
+  usages:
+    - server auth
+    - digital signature
+    - key encipherment
+
+  issuerRef:
+    name: root-ca-issuer
+    kind: ClusterIssuer
+    group: cert-manager.io
